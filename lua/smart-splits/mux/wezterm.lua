@@ -1,5 +1,6 @@
 local Direction = require('smart-splits.types').Direction
 local config = require('smart-splits.config')
+local log = vim.print
 
 local dir_keys_wezterm = {
   [Direction.left] = 'Left',
@@ -50,10 +51,12 @@ local function current_pane_info()
   end
 
   if tab_id == false then
+    log('WEZTERM_PANE env' .. vim.inspect(vim.env.WEZTERM_PANE))
     return nil
   end
 
   local output = wezterm_exec({ 'list', '--format', 'json' })
+  log('Current pane info' .. vim.inspect(output))
   if vim.v.shell_error ~= 0 or not output or #output == 0 then
     return nil
   end
@@ -97,6 +100,7 @@ end
 function M.current_pane_at_edge(direction)
   -- try the new way first
   local output = wezterm_exec({ 'get-pane-direction', direction })
+  vim.print('get-pane-direction ' .. vim.inspect(output))
   if vim.v.shell_error == 0 then
     local ok, value = pcall(tonumber, output)
     return ok and value == nil
